@@ -22,7 +22,7 @@ type Elem struct {
 
 type Ostack struct {
 	entranced bool
-	lenced    []bool
+	fenced    []bool
 	size      int
 	begin     int
 	buttom    *Elem
@@ -52,7 +52,7 @@ type Openstack interface {
 func (o Ostack) init() {
 	o.entranced = true
 	for i := 0; i < o.size; i++ {
-		o.lenced[i] = false
+		o.fenced[i] = false
 	}
 	o.size = 0
 	o.begin = 0
@@ -141,7 +141,7 @@ func (o Ostack) IsExist(e *Elem) bool {
 // I cannot figured out it, so just wait a moment.
 func (o Ostack) SetMap(e *Elem) (mapped []bool) {
 	for k := 0; k < o.size; k++ {
-		if !o.lenced[k] {
+		if !o.fenced[k] {
 			mapped[k] = false
 		}
 		o.entranced = true
