@@ -8,8 +8,7 @@ Eh, maybe I forget somthing, all of these code source from my another project [p
 
 ## openstack
 
-Here the thought: [https://github.com/i0Ek3/p0ints/blob/master/p0ints/2020.0828-openstack.md](https://github.com/i0Ek3/p0ints/blob/master/p0ints/2020.0828-openstack.md).
-
+Here the thought: [https://github.com/i0Ek3/p0ints/blob/master/p0ints/2020.0828-openstack.md](https://github.com/i0Ek3/p0ints/blob/master/p0ints/2020.0828-openstack.md). But I added something small to it, expansion on the way, slowly.
 
 ## License
 

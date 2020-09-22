@@ -1,18 +1,12 @@
 package openstack
 
-/*
- * OPENSTACK is a simulation to validate this kind data structure work well with special needs,
- * but with unstable and errors. In some part this data structure just a suppose which I cannot
- * validate.
- *
- *
- */
+//
+// OPENSTACK JUST AN EXPANDED STACK DATA STRUCTURE SIMULATION WITHOUT FULLY TEST,
+// IN SOME WAY OPENSTACK IS A SUPPOSE WITH MY IDEAS AND UNVALIDATE IN REAL WORK.
+//
 
 import (
-	_ "errors"
 	"log"
-	_ "os"
-	_ "reflect"
 )
 
 type Elem struct {
@@ -31,6 +25,7 @@ type Ostack struct {
 	mapped    bool
 	_map      map[int]*Elem
 	__map     map[*Elem][]interface{}
+	expanded  bool
 }
 
 type Openstack interface {
@@ -47,6 +42,8 @@ type Openstack interface {
 	SetMap(e *Elem) bool
 	GetMap(index int) (*Elem, []interface{})
 	Destory(index int)
+	IsExpand(expanded bool) bool
+	Expand() bool
 }
 
 func (o Ostack) init() {
@@ -60,9 +57,13 @@ func (o Ostack) init() {
 	o.top = nil
 	o.empty = true
 	o.mapped = false
+	o.expanded = false
 }
 
 func (o Ostack) Size() int {
+	if o.empty {
+		return 0
+	}
 	return o.size
 }
 
@@ -77,27 +78,38 @@ func (o Ostack) List() []*Elem {
 }
 
 func (o Ostack) GetButtom() *Elem {
+	if o.empty {
+		return nil
+	}
 	return o.buttom
 }
 
 func (o Ostack) GetTop() *Elem {
+	if o.empty {
+		return nil
+	}
 	return o.top
 }
 
 func (o Ostack) AddElem(e *Elem) (added bool) {
 	if e.position < 0 || e.position > o.size {
 		added = false
+		log.Fatalf("Cannot add element cause of invalid index.")
 	}
-
 	if o.empty {
 		o._map[0] = e
 	}
-
 	if !e.allocated {
+		o._map[o.begin] = e
 		o.begin++
 	}
-	o._map[o.begin] = e
-	added = true
+	if o.begin >= o.size {
+		o.expanded = true
+	}
+	if o.IsExpand(o.expanded) {
+		o.Expand()
+		added = true
+	}
 	return
 }
 
@@ -184,4 +196,21 @@ func (o Ostack) Destory(index int) {
 	}
 	delete(o._map, index)
 	delete(o.__map, o._map[index])
+}
+
+func (o Ostack) IsExpand(expanded bool) bool {
+	if expanded {
+		return true
+	}
+	return false
+}
+
+// Expand expands capacity of openstack, first create double space for
+// openstack then move original elements to new space, after then delete
+// original space.
+func (o Ostack) Expand() bool {
+	// TODO
+	//capacity := make([]*Ostack, 2*o.size)
+
+	return true
 }
