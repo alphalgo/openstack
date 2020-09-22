@@ -37,8 +37,8 @@ type Openstack interface {
 	init()
 	Size() int
 	List() []*Elem
-	GetButtom() int
-	GetTop() int
+	GetButtom() *Elem
+	GetTop() *Elem
 	AddElem(e *Elem) bool
 	RemoveElem(e *Elem) bool
 	IsEmpty() bool
@@ -56,6 +56,8 @@ func (o Ostack) init() {
 	}
 	o.size = 0
 	o.begin = 0
+	o.buttom = nil
+	o.top = nil
 	o.empty = true
 	o.mapped = false
 }
