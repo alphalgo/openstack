@@ -150,7 +150,7 @@ func (o Ostack) IsExist(e *Elem) bool {
 	return false
 }
 
-// When openstack's lence status is true, we turn down the entrance
+// When openstack's fence status is true, we turn down the entrance
 // and start to mapping elements, but it just a little complicated,
 // I cannot figured out it, so just wait a moment.
 func (o Ostack) SetMap(e *Elem) (mapped []bool) {
