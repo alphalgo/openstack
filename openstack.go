@@ -205,12 +205,14 @@ func (o Ostack) IsExpand(expanded bool) bool {
 	return false
 }
 
-// Expand expands capacity of openstack, first create double space for
+// Expand expands capacity of openstack, first we create double space for
 // openstack then move original elements to new space, after then delete
 // original space.
 func (o Ostack) Expand() bool {
-	// TODO
-	//capacity := make([]*Ostack, 2*o.size)
-
+	capacity := make([]Ostack, 2*o.size)
+    capacity = append(capacity, o)
+    for i := 0; i < o.size; i++ {
+        o.Destory(i)
+    }
 	return true
 }
