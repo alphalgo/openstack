@@ -19,7 +19,7 @@ type Ostack struct {
 	fenced    []bool
 	size      int
 	begin     int
-	buttom    *Elem
+	bottom    *Elem
 	top       *Elem
 	empty     bool
 	mapped    bool
@@ -32,7 +32,7 @@ type Openstack interface {
 	init()
 	Size() int
 	List() []*Elem
-	GetButtom() *Elem
+	GetBottom() *Elem
 	GetTop() *Elem
 	AddElem(e *Elem) bool
 	RemoveElem(e *Elem) bool
@@ -53,7 +53,7 @@ func (o Ostack) init() {
 	}
 	o.size = 0
 	o.begin = 0
-	o.buttom = nil
+	o.bottom = nil
 	o.top = nil
 	o.empty = true
 	o.mapped = false
@@ -77,11 +77,11 @@ func (o Ostack) List() []*Elem {
 	return store
 }
 
-func (o Ostack) GetButtom() *Elem {
+func (o Ostack) GetBottom() *Elem {
 	if o.empty {
 		return nil
 	}
-	return o.buttom
+	return o.bottom
 }
 
 func (o Ostack) GetTop() *Elem {
