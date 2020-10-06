@@ -6,7 +6,7 @@ package openstack
 //
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 type Elem struct {
@@ -94,7 +94,7 @@ func (o Ostack) GetTop() *Elem {
 func (o Ostack) AddElem(e *Elem) (added bool) {
 	if e.position < 0 || e.position > o.size {
 		added = false
-		log.Fatalf("Cannot add element cause of invalid index.")
+		log.Warnf("Cannot add element cause of invalid index.")
 	}
 	if o.empty {
 		o._map[0] = e
@@ -189,7 +189,7 @@ func (o Ostack) GetMap(index int) (e *Elem, v []interface{}) {
 //		2) the map full of elements, we just delete the index mapped to
 func (o Ostack) Destory(index int) {
 	if !o._map[index].allocated {
-		log.Fatalf("This position have no element, you needn't to delete it!")
+		log.Warnf("This position have no element, you needn't to delete it!")
 	}
 	if !o.IsExist(o._map[index-1]) && o.IsExist(o._map[index]) {
 		log.Fatalf("Invalid request, impossible!")
