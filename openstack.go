@@ -39,9 +39,9 @@ type Openstack interface {
 	IsEmpty() bool
 	Check(err error)
 	IsExist(e *Elem) bool
-	SetMap(e *Elem) bool
+	SetMap(e *Elem, v ...interface{}) bool
 	GetMap(index int) (*Elem, []interface{})
-	Destory(index int)
+	Destroy(index int)
 	IsExpand(expanded bool) bool
 	Expand() bool
 }
@@ -119,7 +119,7 @@ func (o Ostack) RemoveElem(e *Elem) (removed bool) {
 	}
 
 	if o._map[e.position] != nil {
-		o.Destory(e.position)
+		o.Destroy(e.position)
 	}
 	removed = true
 	return
@@ -129,7 +129,7 @@ func (o Ostack) RemoveElem(e *Elem) (removed bool) {
 func (o Ostack) IsEmpty() bool {
 	if o.empty {
 		return true
-		log.Fatalf("Openstack is empty, please add some elements.")
+		log.Warnf("Openstack is empty, please add some elements.")
 	}
 	return false
 }
@@ -151,9 +151,8 @@ func (o Ostack) IsExist(e *Elem) bool {
 }
 
 // When openstack's fence status is true, we turn down the entrance
-// and start to mapping elements, but it just a little complicated,
-// I cannot figured out it, so just wait a moment.
-func (o Ostack) SetMap(e *Elem) (mapped []bool) {
+// and start to mapping elements.
+func (o Ostack) SetMap(e *Elem, v ...interface{}) (mapped []bool) {
 	for k := 0; k < o.size; k++ {
 		if !o.fenced[k] {
 			mapped[k] = false
@@ -163,10 +162,10 @@ func (o Ostack) SetMap(e *Elem) (mapped []bool) {
 	}
 	// Here means element e mapped to any value but with slice, for
 	// now, this map indicate the related resource of element e.
-	// But I don't know whether the related resource means some
-	// requests or connections or other stuffs which we can processed.
-	// So, in here, we use null interface slice, refactor later.
-	o.__map[e] = []interface{}{}
+    if len(v) > 0 {
+        o.__map[e] = v[0].([]interface{})
+    }
+    o.__map[e] = v
 
 	return
 }
@@ -174,7 +173,7 @@ func (o Ostack) SetMap(e *Elem) (mapped []bool) {
 // getMap gets the value mapped by index and return it's mapping value.
 func (o Ostack) GetMap(index int) (e *Elem, v []interface{}) {
 	if index < 0 || index > o.size {
-		log.Fatalf("Invalid index.")
+		log.Warnf("Invalid index.")
 	}
 	e = o._map[index]
 	v = o.__map[e]
@@ -187,12 +186,12 @@ func (o Ostack) GetMap(index int) (e *Elem, v []interface{}) {
 // and add into tail. But we have follows cases:
 //		1) the element's memory cannot occupied before the occupied one
 //		2) the map full of elements, we just delete the index mapped to
-func (o Ostack) Destory(index int) {
+func (o Ostack) Destroy(index int) {
 	if !o._map[index].allocated {
 		log.Warnf("This position have no element, you needn't to delete it!")
 	}
 	if !o.IsExist(o._map[index-1]) && o.IsExist(o._map[index]) {
-		log.Fatalf("Invalid request, impossible!")
+		log.Warnf("Invalid request, impossible!")
 	}
 	delete(o._map, index)
 	delete(o.__map, o._map[index])
@@ -212,7 +211,7 @@ func (o Ostack) Expand() bool {
 	capacity := make([]Ostack, 2*o.size)
     capacity = append(capacity, o)
     for i := 0; i < o.size; i++ {
-        o.Destory(i)
+        o.Destroy(i)
     }
 	return true
 }
