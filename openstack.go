@@ -9,6 +9,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+    VA = 1 << 10
+    VB = 1 << 6
+)
+
 type Elem struct {
 	position  int
 	allocated bool
@@ -18,6 +23,8 @@ type Ostack struct {
 	entranced bool
 	fenced    []bool
 	size      int
+    cap_      int
+    expcap    []int
 	begin     int
 	bottom    *Elem
 	top       *Elem
@@ -43,7 +50,9 @@ type Openstack interface {
 	GetMap(index int) (*Elem, []interface{})
 	Destroy(index int)
 	IsExpand(expanded bool) bool
-	Expand() bool
+	Expand() []Ostack
+    expand() (newcap int) 
+    abs_(a, b int) int
 }
 
 func (o Ostack) init() {
@@ -52,6 +61,13 @@ func (o Ostack) init() {
 		o.fenced[i] = false
 	}
 	o.size = 0
+    o.cap_ = 0
+    
+    exp := VA 
+    for i := 0; i < VB; i++ {
+        exp *= (i + 1)
+        o.expcap[i] = exp
+    }
 	o.begin = 0
 	o.bottom = nil
 	o.top = nil
@@ -68,7 +84,11 @@ func (o Ostack) Size() int {
 }
 
 func (o Ostack) List() []*Elem {
-	store := make([]*Elem, o.size)
+    // the default value of cap_ is 0, but when we create new
+    // slice, the value of cap_ will increased 1.5 times than
+    // o.size, this action make sure the expand can be proces
+    // -sed correctly.
+	store := make([]*Elem, o.size, (3 / 2) * o.size)
 	if !o.IsEmpty() {
 		for key, value := range o._map {
 			store[key] = value
@@ -103,7 +123,7 @@ func (o Ostack) AddElem(e *Elem) (added bool) {
 		o._map[o.begin] = e
 		o.begin++
 	}
-	if o.begin >= o.size {
+	if o.begin >= o.cap_ {
 		o.expanded = true
 	}
 	if o.IsExpand(o.expanded) {
@@ -207,11 +227,40 @@ func (o Ostack) IsExpand(expanded bool) bool {
 // Expand expands capacity of openstack, first we create double space for
 // openstack then move original elements to new space, after then delete
 // original space.
-func (o Ostack) Expand() bool {
-	capacity := make([]Ostack, 2*o.size)
-    capacity = append(capacity, o)
+func (o Ostack) Expand() []Ostack {
+    newstack := make([]Ostack, 2 * o.size)
+    newstack = append(newstack, o)
     for i := 0; i < o.size; i++ {
         o.Destroy(i)
     }
-	return true
+	return newstack
+}
+
+func (o Ostack) expand() (newcap int) {
+    if o.begin > o.size {
+        need := o.begin - o.size
+        if need <= 2 * o.cap_ { 
+            if o.cap_ < VA {
+                o.cap_ *= 2
+            } else {
+                o.cap_ *= (5 / 4)
+            }    
+        } else {
+            i := 0
+            o.cap_ = o.expcap[i]
+            if o.cap_ < need {
+                i++
+                o.cap_ = o.expcap[i] 
+            }
+        }
+    } 
+    newcap = o.cap_
+    return  
+}
+
+func (o Ostack) abs_(a, b int) int {
+    if a > b {
+        return a - b
+    }
+    return b - a
 }
