@@ -9,16 +9,19 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// defines target value and expect value
 const (
 	VA = 1 << 10
 	VB = 1 << 6
 )
 
+// Elem defines the element of stack
 type Elem struct {
 	position  int
 	allocated bool
 }
 
+// Ostack defines the ostack object
 type Ostack struct {
 	entranced bool
 	fenced    []bool
@@ -35,6 +38,7 @@ type Ostack struct {
 	expanded  bool
 }
 
+// Openstack defines the ostack interface
 type Openstack interface {
 	init()
 	Size() int
@@ -83,6 +87,7 @@ func (o *Ostack) Size() int {
 	return o.size
 }
 
+// List shows the element of ostack
 func (o *Ostack) List() []*Elem {
 	// the default value of cap_ is 0, but when we create new
 	// slice, the value of cap_ will increased 1.5 times than
@@ -97,6 +102,7 @@ func (o *Ostack) List() []*Elem {
 	return store
 }
 
+// GetBottom gets the bottom of ostack
 func (o *Ostack) GetBottom() *Elem {
 	if o.empty {
 		return nil
@@ -104,6 +110,7 @@ func (o *Ostack) GetBottom() *Elem {
 	return o.bottom
 }
 
+// GetTop gets the top of ostack
 func (o *Ostack) GetTop() *Elem {
 	if o.empty {
 		return nil
@@ -111,6 +118,7 @@ func (o *Ostack) GetTop() *Elem {
 	return o.top
 }
 
+// AddElem adds the element to ostack
 func (o *Ostack) AddElem(e *Elem) (added bool) {
 	if e.position < 0 || e.position > o.size {
 		added = false
@@ -133,6 +141,7 @@ func (o *Ostack) AddElem(e *Elem) (added bool) {
 	return
 }
 
+// RemoveElem removes the element from ostack
 func (o *Ostack) RemoveElem(e *Elem) (removed bool) {
 	if o.empty {
 		removed = false
@@ -154,6 +163,7 @@ func (o *Ostack) IsEmpty() bool {
 	return false
 }
 
+// Check checks if err
 func (o *Ostack) Check(err error) {
 	if err != nil {
 		panic(err)
@@ -217,6 +227,7 @@ func (o *Ostack) Destroy(index int) {
 	delete(o.__map, o._map[index])
 }
 
+// IsExpand checks if ostack is expand enable
 func (o *Ostack) IsExpand(expanded bool) bool {
 	if expanded {
 		return true
